@@ -8,6 +8,7 @@
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
+    "baseUrl": ".",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -22,6 +23,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "lib/data.js", "actions/credits.js", "app/(main)/doctors/[specialty]/page.tsx", "app/(main)/onboarding/layout.tsx", "app/(main)/onboarding/page.tsx", "components/page-header.tsx", "app/(main)/layout.tsx", "app/(main)/pricing/page.tsx", "hooks/use-fetch.jsx", "app/(main)/admin/_components/pending-doctors.tsx", "app/(main)/admin/_components/verified-doctors.tsx", "app/(main)/admin/page.jsx", "app/(main)/doctor/_components/availability-settings.tsx"],
   "exclude": ["node_modules"]
 }

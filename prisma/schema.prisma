@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  String              @id @default(uuid())
+  clerkUserId         String              @unique
+  email               String              @unique
+  name                String?
+  imageUrl            String?
+  role                UserRole            @default(UNASSIGNED)
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  credits             Int                 @default(2)
+  specialty           String?
+  experience          Int?
+  credentialUrl       String?
+  description         String?
+  verificationStatus  VerificationStatus? @default(PENDING)
+  doctorAppointments  Appointment[]       @relation("DoctorAppointments")
+  patientAppointments Appointment[]       @relation("PatientAppointments")
+  availabilities      Availability[]
+  transactions        CreditTransaction[]
+}
+
+model Availability {
+  id        String     @id @default(uuid())
+  doctorId  String
+  startTime DateTime
+  endTime   DateTime
+  status    SlotStatus @default(AVAILABLE)
+  doctor    User       @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  @@index([doctorId, startTime])
+}
+
+model Appointment {
+  id                 String            @id @default(uuid())
+  patientId          String
+  doctorId           String
+  starTime           DateTime
+  endTime            DateTime
+  status             AppointmentStatus @default(SCHEDULED)
+  notes              String?
+  patientDescription String?
+  videoSessionId     String?
+  videoSessionToken  String?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  doctor             User              @relation("DoctorAppointments", fields: [doctorId], references: [id])
+  patient            User              @relation("PatientAppointments", fields: [patientId], references: [id])
+
+  @@index([status, starTime])
+  @@index([doctorId, starTime])
+}
+
+model CreditTransaction {
+  id        String          @id @default(uuid())
+  userId    String
+  amount    Int
+  type      TransactionType
+  packageId String?
+  createdAt DateTime        @default(now())
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum UserRole {
+  UNASSIGNED
+  PATIENT
+  DOCTOR
+  ADMIN
+}
+
+enum VerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum SlotStatus {
+  AVAILABLE
+  BOOKED
+  BLOCKED
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+}
+
+enum TransactionType {
+  CREDIT_PURCHASE
+  APPOINTMENT_DEDUCTION
+  ADMIN_ADJUSTMENT
+}
