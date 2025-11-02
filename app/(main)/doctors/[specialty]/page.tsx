@@ -11,7 +11,7 @@ interface SpecialtyPageProps {
 }
 
 const SpecialtyPage = async ({ params }: SpecialtyPageProps) => {
-  const { specialty } = await params;
+  const { specialty } = params;
 
   if(!specialty) {
     redirect("/doctors");
