@@ -1,6 +1,7 @@
 "use server"
 
 import { db } from "@/lib/prisma";
+import type { User } from '@/lib/generated/prisma';
 import { auth } from "@clerk/nextjs/server";
 import { Auth } from "@vonage/auth";
 import { Vonage } from "@vonage/server-sdk";
@@ -20,27 +21,26 @@ const options = {};
 const vonage = new Vonage(credentials, options);
 
 // Get doctor by ID
-export async function getDoctorById(doctorId: string ){
-   try {
-      const doctor = await db.user.findUnique({
-         where: {
-            id: doctorId,
-            role: "DOCTOR",
-            verificationStatus: "VERIFIED",
-         },
-      });
+export async function getDoctorById(doctorId: string): Promise<{ doctor: User }> {
+  try {
+    const doctor = await db.user.findUnique({
+      where: {
+        id: doctorId,
+        role: 'DOCTOR',
+        verificationStatus: 'VERIFIED',
+      },
+    });
 
-      if(!doctor){
-         throw new Error("Doctor not found");
-      }
-
-      return {doctor}
-
-   } catch (error) {
-    if (error instanceof Error) {
-      throw new Error("Failed to fetch doctor details: " + error.message);
+    if (!doctor) {
+      throw new Error('Doctor not found');
     }
-    throw new Error("Failed to fetch doctor details");
+
+    return { doctor };
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error('Failed to fetch doctor details: ' + error.message);
+    }
+    throw new Error('Failed to fetch doctor details');
   }
 }
 

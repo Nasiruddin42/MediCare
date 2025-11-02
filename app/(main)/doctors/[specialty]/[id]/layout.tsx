@@ -1,15 +1,16 @@
 import { getDoctorById } from '@/actions/appointments';
 import PageHeader from '@/components/page-header';
 import { redirect } from 'next/navigation';
-import React from 'react';
+import React, { ReactNode } from 'react';
 
 interface DoctorProfileLayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
+  // Next's internal types expect params to be a Promise in this async layout case
   params: Promise<{ id: string }>;
 }
 
-// ✅ Fix generateMetadata typing
-export async function generateMetadata({ params }: { params: { id: string } }) {
+// generateMetadata receives params as a potentially async value — await it
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const { doctor } = await getDoctorById(id);
 
@@ -26,7 +27,6 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
   };
 }
 
-// ✅ Fix layout typing
 const DoctorProfileLayout = async ({ children, params }: DoctorProfileLayoutProps) => {
   const { id } = await params;
   const { doctor } = await getDoctorById(id);
